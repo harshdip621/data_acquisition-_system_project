@@ -1,0 +1,19 @@
+[Sensor]
+   │
+   ▼
+[STM32F4 ADC] ──> (Sample analog value)
+   │
+   ▼
+[FreeRTOS Task] ──> (Periodically triggers ADC and processes data)
+   │
+   ▼
+[USART Interface]
+   │
+   ▼
+[ESP8266 Wi-Fi Module]
+   │
+   ▼
+[ThingSpeak / IoT Platform] ──> (Cloud database + visualization)
+   │
+   ▼
+[Web Graph / Mobile Dashboard]
