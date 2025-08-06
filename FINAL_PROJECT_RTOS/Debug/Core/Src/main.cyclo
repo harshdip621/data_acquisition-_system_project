@@ -1,0 +1,14 @@
+../Core/Src/main.c:87:6:vSendingtemp	2
+../Core/Src/main.c:121:6:vSendinglight	3
+../Core/Src/main.c:158:6:vSendinggas	5
+../Core/Src/main.c:240:6:vuartsend	4
+../Core/Src/main.c:272:5:main	2
+../Core/Src/main.c:365:6:SystemClock_Config	3
+../Core/Src/main.c:412:13:MX_ADC1_Init	3
+../Core/Src/main.c:464:13:MX_ADC2_Init	3
+../Core/Src/main.c:516:13:MX_ADC3_Init	3
+../Core/Src/main.c:568:13:MX_USART2_UART_Init	2
+../Core/Src/main.c:601:13:MX_GPIO_Init	1
+../Core/Src/main.c:639:6:StartDefaultTask	1
+../Core/Src/main.c:659:6:HAL_TIM_PeriodElapsedCallback	2
+../Core/Src/main.c:677:6:Error_Handler	1
