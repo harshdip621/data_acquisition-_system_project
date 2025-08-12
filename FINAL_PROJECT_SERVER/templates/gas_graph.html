@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gas Graph</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Gas</h2>
+  <canvas id="gasChart" width="800" height="300"></canvas>
+
+  <script>
+    let gasChart;
+
+    function fetchAndUpdateGas() {
+      fetch('/graph-data')
+        .then(res => res.json())
+        .then(data => {
+          const grouped = {};
+
+          data.forEach(([type, value, timestamp]) => {
+            if (!grouped[timestamp]) grouped[timestamp] = { gas: null };
+            if (type === 'gas') grouped[timestamp].gas = value;
+          });
+
+          const timestamps = Object.keys(grouped).sort();
+
+          const labels = timestamps.map(ts => {
+            const date = new Date(ts);
+            return date.toLocaleTimeString();
+          });
+
+          const gasData = timestamps.map(ts => grouped[ts].gas);
+
+          if (!gasChart) {
+            const ctx = document.getElementById('gasChart').getContext('2d');
+            gasChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels,
+                datasets: [{
+                  label: 'Gas',
+                  data: gasData,
+                  borderColor: 'green',
+                  fill: false,
+                  tension: 0.1,
+                }]
+              },
+              options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+              }
+            });
+          } else {
+            gasChart.data.labels = labels;
+            gasChart.data.datasets[0].data = gasData;
+            gasChart.update();
+          }
+        })
+        .catch(err => console.error('Error:', err));
+    }
+
+    fetchAndUpdateGas();
+    setInterval(fetchAndUpdateGas, 5000);
+  </script>
+</body>
+</html>

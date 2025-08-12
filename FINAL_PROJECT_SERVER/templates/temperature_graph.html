@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Temperature Graph</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Temperature</h2>
+  <canvas id="temperatureChart" width="800" height="300"></canvas>
+
+  <script>
+    let temperatureChart;
+
+    function fetchAndUpdateTemperature() {
+      fetch('/graph-data')
+        .then(res => res.json())
+        .then(data => {
+          const grouped = {};
+
+          data.forEach(([type, value, timestamp]) => {
+            if (!grouped[timestamp]) grouped[timestamp] = { temperature: null };
+            if (type === 'temperature') grouped[timestamp].temperature = value;
+          });
+
+          const timestamps = Object.keys(grouped).sort();
+
+          const labels = timestamps.map(ts => {
+            const date = new Date(ts);
+            return date.toLocaleTimeString();
+          });
+
+          const temperatureData = timestamps.map(ts => grouped[ts].temperature);
+
+          if (!temperatureChart) {
+            const ctx = document.getElementById('temperatureChart').getContext('2d');
+            temperatureChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels,
+                datasets: [{
+                  label: 'Temperature',
+                  data: temperatureData,
+                  borderColor: 'red',
+                  fill: false,
+                  tension: 0.1,
+                }]
+              },
+              options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+              }
+            });
+          } else {
+            temperatureChart.data.labels = labels;
+            temperatureChart.data.datasets[0].data = temperatureData;
+            temperatureChart.update();
+          }
+        })
+        .catch(err => console.error('Error:', err));
+    }
+
+    // Initial fetch and chart draw
+    fetchAndUpdateTemperature();
+
+    // Refresh every 5 seconds (5000 ms)
+    setInterval(fetchAndUpdateTemperature, 5000);
+  </script>
+</body>
+</html>

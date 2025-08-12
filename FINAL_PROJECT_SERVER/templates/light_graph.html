@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Light Graph</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Light</h2>
+  <canvas id="lightChart" width="800" height="300"></canvas>
+
+  <script>
+    let lightChart;
+
+    function fetchAndUpdateLight() {
+      fetch('/graph-data')
+        .then(res => res.json())
+        .then(data => {
+          const grouped = {};
+
+          data.forEach(([type, value, timestamp]) => {
+            if (!grouped[timestamp]) grouped[timestamp] = { LDR: null };
+            if (type === 'LDR') grouped[timestamp].LDR = value;
+          });
+
+          const timestamps = Object.keys(grouped).sort();
+
+          const labels = timestamps.map(ts => {
+            const date = new Date(ts);
+            return date.toLocaleTimeString();
+          });
+
+          const lightData = timestamps.map(ts => grouped[ts].LDR);
+
+          if (!lightChart) {
+            const ctx = document.getElementById('lightChart').getContext('2d');
+            lightChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels,
+                datasets: [{
+                  label: 'Light',
+                  data: lightData,
+                  borderColor: 'orange',
+                  fill: false,
+                  tension: 0.1,
+                }]
+              },
+              options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+              }
+            });
+          } else {
+            lightChart.data.labels = labels;
+            lightChart.data.datasets[0].data = lightData;
+            lightChart.update();
+          }
+        })
+        .catch(err => console.error('Error:', err));
+    }
+
+    fetchAndUpdateLight();
+    setInterval(fetchAndUpdateLight, 5000);
+  </script>
+</body>
+</html>
